@@ -1,0 +1,21 @@
+from sklearn.preprocessing import StandardScaler
+def myPCA(data, dataorg):
+    X_scaled = StandardScaler().fit_transform(data)
+    features = X_scaled.T
+    cov_matrix = np.cov(features)
+    values, vectors = np.linalg.eig(cov_matrix)
+
+    explained_variances = []
+    for i in range(len(values)):
+        explained_variances.append(values[i] / np.sum(values))
+
+    projected_1 = X_scaled.dot(vectors.T[0])
+    projected_2 = X_scaled.dot(vectors.T[1])
+
+    res = pd.DataFrame(projected_1, columns=['PC1'])
+    res['PC2'] = projected_2
+    res['Y'] = pd.DataFrame(dataorg['category_id'].to_numpy())
+
+    plt.figure(figsize=(20,10))
+    output = sns.scatterplot(res['PC1'], res['PC2'], hue=res['Y'], palette='deep')
+    return output
